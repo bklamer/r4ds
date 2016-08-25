@@ -240,7 +240,7 @@ contribs <- contribs %>%
   arrange(name) %>% 
   mutate(uname = ifelse(!grepl(" ", name), paste0("@", name), name))
 
-cat("Thanks go to all contributers in alphabetical order: ")
+cat("Thanks go to all contributors in alphabetical order: ")
 cat(paste0(contribs$uname, collapse = ", "))
 cat(".\n")
 ```
