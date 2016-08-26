@@ -40,7 +40,7 @@ There are two main resampling techniques that we're going to cover.
   quality. However it introduces a new bias: you're not using all the data to
   fit the model so it's not going to be quite as good as it could be.
   
-* We will use __boostrapping__ to understand how stable (or how variable)
+* We will use __bootstrapping__ to understand how stable (or how variable)
   the model is. If you sample data from the same population multiple times, 
   how much does your model vary? Instead of going back to collect new data, 
   you can use the best estimate of the population data: the data you've
@@ -51,7 +51,7 @@ There are lots of high-level helpers to do these resampling methods in R. We're 
 
 <http://topepo.github.io/caret>. [Applied Predictive Modeling](https://amzn.com/1461468485), by Max Kuhn and Kjell Johnson.
 
-If you're competing in competitions, like Kaggle, that are predominantly about creating good predicitons, developing a good strategy for avoiding overfitting is very important. Otherwise you risk tricking yourself into thinking that you have a good model, when in reality you just have a model that does a good job of fitting your data.
+If you're competing in competitions, like Kaggle, that are predominantly about creating good predictions, developing a good strategy for avoiding overfitting is very important. Otherwise you risk tricking yourself into thinking that you have a good model, when in reality you just have a model that does a good job of fitting your data.
 
 There is a closely related family that uses a similar idea: model ensembles. However, instead of trying to find the best models, ensembles make use of all the models, acknowledging that even models that don't fit all the data particularly well can still model some subsets well. In general, you can think of model ensemble techniques as functions that take a list of models, and a return a single model that attempts to take the best part of each.
 
@@ -59,7 +59,7 @@ There is a closely related family that uses a similar idea: model ensembles. How
 ### Prerequisites
 
 ```{r setup, message = FALSE}
-# Standard data manipulation and visulisation
+# Standard data manipulation and visualisation
 library(dplyr)
 library(ggplot2)
 
@@ -181,7 +181,7 @@ last_plot() +
 
 Bootstrapping is a useful tool to help us understand how the model might vary if we'd collected a different sample from the population. A related technique is cross-validation which allows us to explore the quality of the model. It works by repeatedly splitting the data into two pieces. One piece, the training set, is used to fit, and the other piece, the test set, is used to measure the model quality.
 
-The following code generates 100 test-training splits, holding out 20% of the data for testing each time. We then fit a model to the training set, and evalute the error on the test set:
+The following code generates 100 test-training splits, holding out 20% of the data for testing each time. We then fit a model to the training set, and evaluate the error on the test set:
 
 ```{r}
 cv <- crossv_mc(df, 100) %>% 
@@ -192,7 +192,7 @@ cv <- crossv_mc(df, 100) %>%
 cv
 ```
 
-Obviously, a plot is going to help us see distribution more easily. I've added our original estimate of the model error as a white vertical line (where the same dataset is used for both training and teseting), and you can see it's very optimistic.
+Obviously, a plot is going to help us see distribution more easily. I've added our original estimate of the model error as a white vertical line (where the same dataset is used for both training and testing), and you can see it's very optimistic.
 
 ```{r}
 cv %>% 
@@ -202,7 +202,7 @@ cv %>%
   geom_rug()
 ```
 
-The distribution of errors is highly skewed: there are a few cases which have very high errors. These respresent samples where we ended up with a few cases on all with low values or high values of x.  Let's take a look:
+The distribution of errors is highly skewed: there are a few cases which have very high errors. These represent samples where we ended up with a few cases on all with low values or high values of x.  Let's take a look:
 
 ```{r}
 filter(cv, rmse > 1.5) %>% 
@@ -220,7 +220,7 @@ Now that we've given you a quick overview and intuition for these techniques, le
 
 ### Building blocks
 
-Both the boostrap and cross-validation are build on top of a "resample" object. In modelr, you can access these low-level tools directly with the `resample_*` functions. 
+Both the bootsrap and cross-validation are build on top of a "resample" object. In modelr, you can access these low-level tools directly with the `resample_*` functions. 
 
 These functions return an object of class "resample", which represents the resample in a memory efficient way. Instead of storing the resampled dataset itself, it instead stores the integer indices, and a "pointer" to the original dataset. This makes resamples take up much less memory.
 
@@ -243,14 +243,14 @@ If you get a strange error, it's probably because the modelling function doesn't
 
 `bootstrap()` and `crossv_mc()` are built on top of these simpler primitives. They are designed to work naturally in a model exploration environment by returning data frames. Each row of the data frame represents a single sample. They return slightly different columns:
 
-*   `boostrap()` returns a data frame with two columns:
+*   `bootstrap()` returns a data frame with two columns:
 
     ```{r}
     bootstrap(df, 3)
     ```
     
     `strap` gives the bootstrap sample dataset, and `.id` assigns a 
-    unique identifer to each model (this is often useful for plotting)
+    unique identifier to each model (this is often useful for plotting)
     
 *   `crossv_mc()` return a data frame with three columns:
 
@@ -290,7 +290,7 @@ It's called the $R^2$ because for simple models like this, it's just the square 
 cor(heights$income, heights$height) ^ 2
 ```
 
-The $R^2$ is an ok single number summary, but I prefer to think about the unscaled residuals because it's easier to interpret in the context of the original data. As you'll also learn later, it's also a rather optimistic interpretation of the model. Because you're asssessing the model using the same data that was used to fit it, it really gives more of an upper bound on the quality of the model, not a fair assessment. 
+The $R^2$ is an ok single number summary, but I prefer to think about the unscaled residuals because it's easier to interpret in the context of the original data. As you'll also learn later, it's also a rather optimistic interpretation of the model. Because you're assessing the model using the same data that was used to fit it, it really gives more of an upper bound on the quality of the model, not a fair assessment. 
 
 
 
